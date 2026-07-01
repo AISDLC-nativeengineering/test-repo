@@ -1,10 +1,15 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
+import logging
+
+# Configure structured logging to JSON format
+logging.basicConfig(filename='audit_log.json', level=logging.INFO, format='%(message)s')
 
 class FinancialReport:
-    def __init__(self, dataset_path):
+    def __init__(self, dataset_path, user_id):
         self.dataset_path = dataset_path
+        self.user_id = user_id
         self.data = None
 
     def load_data(self):
@@ -28,6 +33,14 @@ class FinancialReport:
         plt.title('Financial Variance Analysis')
         plt.savefig(output_path)
         plt.close()
+        
+        # Log the visualization generation
+        logging.info({
+            "event": "report_generation",
+            "timestamp": datetime.now().isoformat(),
+            "output_path": output_path,
+            "user_id": self.user_id
+        })
 
     def export_report(self, format='pdf', output_path='financial_report.pdf'):
         """Export the report in specified format (PDF or Excel)."""
@@ -49,9 +62,18 @@ class FinancialReport:
             self.data.to_excel(output_path, index=False)
         else:
             raise ValueError("Unsupported format. Use 'pdf' or 'excel'.")
+        
+        # Log the export activity
+        logging.info({
+            "event": "data_export",
+            "timestamp": datetime.now().isoformat(),
+            "format": format,
+            "output_path": output_path,
+            "user_id": self.user_id
+        })
 
 # Example usage
-# report = FinancialReport(dataset_path='financial_data.csv')
+# report = FinancialReport(dataset_path='financial_data.csv', user_id='user123')
 # report.load_data()
 # report.compute_variance()
 # report.generate_visualization(output_path='variance_graph.png')
