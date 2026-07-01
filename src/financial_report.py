@@ -1,11 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
+from src.audit_log import AuditLog
 
 class FinancialReport:
     def __init__(self, dataset_path):
         self.dataset_path = dataset_path
         self.data = None
+        self.audit_log = AuditLog(db_path='audit_log.db')
 
     def load_data(self):
         """Loads financial data from the dataset."""
@@ -28,6 +30,7 @@ class FinancialReport:
         plt.title('Financial Variance Analysis')
         plt.savefig(output_path)
         plt.close()
+        self.audit_log.log_action(user_id='user123', action_type='Report Generation', metadata=f'Report saved at {output_path}')
 
     def export_report(self, format='pdf', output_path='financial_report.pdf'):
         """Export the report in specified format (PDF or Excel)."""
@@ -35,7 +38,6 @@ class FinancialReport:
             raise ValueError("Data not loaded. Call `load_data()` first.")
 
         if format == 'pdf':
-            # Export visualization as part of PDF report
             from matplotlib.backends.backend_pdf import PdfPages
             with PdfPages(output_path) as pdf:
                 plt.figure(figsize=(10, 6))
@@ -49,6 +51,7 @@ class FinancialReport:
             self.data.to_excel(output_path, index=False)
         else:
             raise ValueError("Unsupported format. Use 'pdf' or 'excel'.")
+        self.audit_log.log_action(user_id='user123', action_type='Export', metadata=f'Report exported in {format} format at {output_path}')
 
 # Example usage
 # report = FinancialReport(dataset_path='financial_data.csv')
