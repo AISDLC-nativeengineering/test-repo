@@ -1,11 +1,19 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import os
 
 class FinancialReport:
-    def __init__(self, dataset_path):
+    def __init__(self, dataset_path, stakeholders):
         self.dataset_path = dataset_path
         self.data = None
+        self.stakeholders = stakeholders
 
     def load_data(self):
         """Loads financial data from the dataset."""
@@ -50,9 +58,72 @@ class FinancialReport:
         else:
             raise ValueError("Unsupported format. Use 'pdf' or 'excel'.")
 
+    def send_email(self):
+        """
+        Send financial report email to stakeholders.
+        """
+        try:
+            report_path = "financial_report.pdf"
+            self.export_report(output_path=report_path)
+
+            sender_email = "your_email@example.com"
+            sender_password = "your_password"
+
+            for recipient_email in self.stakeholders:
+                message = MIMEMultipart()
+                message['From'] = sender_email
+                message['To'] = recipient_email
+                message['Subject'] = "Monthly Financial Report"
+
+                body = "Please find attached the monthly financial report."
+                message.attach(MIMEText(body, 'plain'))
+
+                attachment = open(report_path, 'rb')
+                part = MIMEBase('application', 'octet-stream')
+                part.set_payload((attachment).read())
+                encoders.encode_base64(part)
+                part.add_header('Content-Disposition', f"attachment; filename={os.path.basename(report_path)}")
+                message.attach(part)
+                attachment.close()
+
+                # Connect to server and send email
+                server = smtplib.SMTP('smtp.example.com', 587)
+                server.starttls()
+                server.login(sender_email, sender_password)
+                text = message.as_string()
+                server.sendmail(sender_email, recipient_email, text)
+                server.quit()
+
+        except Exception as e:
+            print(f"Error sending email: {e}")
+            raise
+
+    @staticmethod
+    def is_first_business_day():
+        """Checks if today is the first business day of the month."""
+        today = datetime.today()
+        first_day = today.replace(day=1)
+        return today.weekday() < 5 and today.day == first_day.day
+
+
+# Scheduler setup
+scheduler = BackgroundScheduler()
+def scheduled_job():
+    try:
+        if FinancialReport.is_first_business_day():
+            report = FinancialReport(dataset_path='financial_data.csv', stakeholders=['stakeholder1@example.com', 'stakeholder2@example.com'])
+            report.load_data()
+            report.compute_variance()
+            report.send_email()
+
+    except Exception as err:
+        print(f"Scheduled job error: {err}")
+
+scheduler.add_job(scheduled_job, 'cron', day='1')  # Adjust cron for first business day
+scheduler.start()
+
 # Example usage
-# report = FinancialReport(dataset_path='financial_data.csv')
+# report = FinancialReport(dataset_path='financial_data.csv', stakeholders=['example@example.com'])
 # report.load_data()
 # report.compute_variance()
-# report.generate_visualization(output_path='variance_graph.png')
-# report.export_report(format='pdf', output_path='financial_report.pdf')
+# report.send_email()
