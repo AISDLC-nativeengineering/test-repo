@@ -1,11 +1,25 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
+import logging  # Added for session logging
+
+# Configure logging
+logging.basicConfig(
+    filename="session.log",
+    level=logging.INFO,
+    format="%(asctime)s - USER_ID: %(message)s"
+)
 
 class FinancialReport:
-    def __init__(self, dataset_path):
+    def __init__(self, dataset_path, user_id):  # Added user_id parameter
         self.dataset_path = dataset_path
+        self.user_id = user_id  # Store user_id
         self.data = None
+        self.log_session_initiation()  # Log session initiation
+
+    def log_session_initiation(self):
+        """Logs the initiation of a user session accessing the reporting module."""
+        logging.info(f"Reporting module accessed by user {self.user_id}")
 
     def load_data(self):
         """Loads financial data from the dataset."""
@@ -22,7 +36,11 @@ class FinancialReport:
         if self.data is None or 'Variance' not in self.data.columns:
             raise ValueError("Variance not computed. Call `compute_variance()` first.")
         plt.figure(figsize=(10, 6))
-        plt.bar(self.data['Category'], self.data['Variance'], color=['green' if x >= 0 else 'red' for x in self.data['Variance']])
+        plt.bar(
+            self.data['Category'],
+            self.data['Variance'],
+            color=['green' if x >= 0 else 'red' for x in self.data['Variance']]
+        )
         plt.xlabel('Category')
         plt.ylabel('Variance')
         plt.title('Financial Variance Analysis')
@@ -39,7 +57,11 @@ class FinancialReport:
             from matplotlib.backends.backend_pdf import PdfPages
             with PdfPages(output_path) as pdf:
                 plt.figure(figsize=(10, 6))
-                plt.bar(self.data['Category'], self.data['Variance'], color=['green' if x >= 0 else 'red' for x in self.data['Variance']])
+                plt.bar(
+                    self.data['Category'],
+                    self.data['Variance'],
+                    color=['green' if x >= 0 else 'red' for x in self.data['Variance']]
+                )
                 plt.xlabel('Category')
                 plt.ylabel('Variance')
                 plt.title('Financial Variance Analysis')
@@ -51,7 +73,7 @@ class FinancialReport:
             raise ValueError("Unsupported format. Use 'pdf' or 'excel'.")
 
 # Example usage
-# report = FinancialReport(dataset_path='financial_data.csv')
+# report = FinancialReport(dataset_path='financial_data.csv', user_id='USER123')
 # report.load_data()
 # report.compute_variance()
 # report.generate_visualization(output_path='variance_graph.png')
