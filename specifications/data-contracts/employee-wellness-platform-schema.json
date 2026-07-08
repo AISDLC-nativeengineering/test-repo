@@ -1,0 +1,18 @@
+{
+  "WellnessProgram": {
+    "id": "integer",
+    "name": "string",
+    "description": "string"
+  },
+  "DashboardMetrics": {
+    "wellnessProgress": "integer",
+    "productivityScore": "integer",
+    "challengeStatus": "string"
+  },
+  "HabitTracking": {
+    "hydration": "boolean",
+    "exercise": "boolean",
+    "mood": "string",
+    "date": "string (YYYY-MM-DD)"
+  }
+}
