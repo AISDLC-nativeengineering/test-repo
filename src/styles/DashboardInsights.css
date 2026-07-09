@@ -1,0 +1,59 @@
+.dashboard-insights {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.dashboard-insights h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.metrics {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+}
+
+.metric {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    width: 200px;
+}
+
+.metric p {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.metric h2 {
+    font-size: 20px;
+    color: #333;
+}
+
+.actions button {
+    margin: 10px;
+    padding: 10px 15px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.actions button:hover {
+    background-color: #0056b3;
+}
+
+.error {
+    color: red;
+    font-size: 16px;
+}
+
+.loading {
+    color: #555;
+    font-size: 16px;
+}
