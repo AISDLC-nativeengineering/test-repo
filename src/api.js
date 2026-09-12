@@ -1,22 +1,23 @@
-import { io } from 'socket.io-client';
+import axios from 'axios';
 
-const socket = io();
+const API_BASE_URL = 'https://api.example.com';
 
-export const fetchHeatPumpStatus = async () => {
+export const fetchAlerts = async (filters = {}) => {
   try {
-    const response = await fetch('/heatpumps/status');
-    if (!response.ok) {
-      throw new Error(`Error fetching data: ${response.status}`);
-    }
-    return await response.json();
+    const response = await axios.get(`${API_BASE_URL}/alerts`, { params: filters });
+    return response.data;
   } catch (error) {
-    console.error('API Error:', error);
-    throw error;
+    console.error('Error fetching alerts:', error);
+    return [];
   }
 };
 
-export const subscribeToUpdates = (onUpdate) => {
-  socket.on('statusUpdate', (data) => {
-    onUpdate(data);
-  });
+export const fetchKPIs = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/kpis`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching KPIs:', error);
+    return [];
+  }
 };
