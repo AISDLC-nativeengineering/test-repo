@@ -1,14 +1,27 @@
-def authenticate_user(username, password):
-    valid_users = {"user1": "password123", "user2": "securePassword456"}
+# Secure Login Implementation
 
-    if username in valid_users and valid_users[username] == password:
-        return "Authenticated"
-    return "Authentication failed"
+class SecureLogin:
+    def __init__(self):
+        pass
 
-# Example usage
-if __name__ == "__main__":
-    user_input_username = input("Enter username: ")
-    user_input_password = input("Enter password: ")
+    def authenticate_user(self, username, password):
+        """Authenticate user credentials."""
+        valid_users = {"admin": "password123", "user1": "securePassword456"}
+        if username in valid_users and valid_users[username] == password:
+            return "Access granted"
+        else:
+            return "Invalid credentials"
 
-    result = authenticate_user(user_input_username, user_input_password)
-    print(result)
+    def forgot_password(self):
+        """Display recovery prompts."""
+        return "Recovery prompt displayed"
+
+# Simulating valid login
+login_system = SecureLogin()
+print(login_system.authenticate_user("admin", "password123"))
+
+# Simulating invalid login
+print(login_system.authenticate_user("user1", "wrongPassword"))
+
+# Simulating forgot password
+print(login_system.forgot_password())
