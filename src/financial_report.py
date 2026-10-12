@@ -48,7 +48,7 @@ class FinancialReport:
         elif format == 'excel':
             self.data.to_excel(output_path, index=False)
         else:
-            raise ValueError("Unsupported format. Use 'pdf' or 'excel'.")
+            raise ValueError("Unsupported format. Use 'pdf' or 'excel'. Displaying error message...")
 
 # Example usage
 # report = FinancialReport(dataset_path='financial_data.csv')
