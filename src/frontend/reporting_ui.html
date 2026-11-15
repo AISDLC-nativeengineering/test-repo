@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Reporting</title>
+</head>
+<body>
+    <h1>Generate Financial Reports</h1>
+
+    <form id="reportForm">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" required><br><br>
+
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate" required><br><br>
+
+        <label for="category">Category:</label>
+        <select id="category" name="category">
+            <option value="">Select Category</option>
+            <option value="sales">Sales</option>
+            <option value="expenses">Expenses</option>
+        </select><br><br>
+
+        <label for="activity">Activity:</label>
+        <select id="activity" name="activity">
+            <option value="">Select Activity</option>
+            <option value="marketing">Marketing</option>
+            <option value="development">Development</option>
+        </select><br><br>
+
+        <label for="format">Export Format:</label>
+        <select id="format" name="format">
+            <option value="pdf">PDF</option>
+            <option value="excel">Excel</option>
+        </select><br><br>
+
+        <button type="submit">Generate Report</button>
+    </form>
+
+    <p id="resultMessage"></p>
+
+    <script>
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const category = document.getElementById('category').value;
+            const activity = document.getElementById('activity').value;
+            const format = document.getElementById('format').value;
+
+            const filters = {
+                dateRange: { start: startDate, end: endDate },
+                category,
+                activity
+            };
+
+            const response = await fetch('/api/reports', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ filters, exportFormat: format })
+            });
+
+            const result = await response.json();
+            const messageElement = document.getElementById('resultMessage');
+
+            if (result.status === 'success') {
+                messageElement.innerHTML = `Report generated successfully. <a href="${result.downloadUrl}">Download</a>`;
+            } else {
+                messageElement.textContent = `Error: ${result.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
