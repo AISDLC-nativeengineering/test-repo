@@ -1,14 +1,21 @@
 import React, { useEffect } from 'react';
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
+import { RouterProvider } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   MODULES,
+  createFinancialDashboardRouter,
   fetchModules,
   UnsavedChangesProvider,
   useUnsavedChanges,
   UnsavedChangesModal,
 } from './FinancialDashboardNavigation';
+
+afterEach(() => {
+  cleanup();
+  window.history.replaceState({}, '', '/');
+});
 
 describe('dashboard module navigation', () => {
   it('loads the four supported modules from the modules API', async () => {
@@ -42,5 +49,21 @@ describe('dashboard module navigation', () => {
     };
     render(<UnsavedChangesProvider><TestScreen /></UnsavedChangesProvider>);
     expect(screen.getByText('Test screen')).toBeInTheDocument();
+  });
+
+  it('renders the category editor in the Transactions module', async () => {
+    window.history.replaceState({}, '', '/modules/transactions');
+    const router = createFinancialDashboardRouter();
+
+    render(
+      <UnsavedChangesProvider>
+        <RouterProvider router={router} />
+      </UnsavedChangesProvider>,
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: 'Transactions' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Green Grocer')).toBeInTheDocument();
   });
 });
