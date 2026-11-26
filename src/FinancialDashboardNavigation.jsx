@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { NavLink, Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useBlocker, useLocation } from 'react-router-dom';
 import './FinancialDashboardNavigation.css';
+import TransactionCategoryEditor from './TransactionCategoryEditor';
 
 export const MODULES = [
   { key: 'overview', title: 'Overview' },
@@ -146,10 +147,18 @@ export const createFinancialDashboardRouter = (modules = MODULES) =>
     <Route path="/" element={<ModuleLayout modules={modules} />}>
       <Route index element={<ModulePlaceholder moduleKey="overview" title="Overview" />} />
       {modules.map((module) => (
-        <Route key={module.key} path={`modules/${module.key}`} element={<ModulePlaceholder moduleKey={module.key} title={module.title} />} />
+        <Route
+          key={module.key}
+          path={`modules/${module.key}`}
+          element={
+            module.key === 'transactions'
+              ? <TransactionCategoryEditor />
+              : <ModulePlaceholder moduleKey={module.key} title={module.title} />
+          }
+        />
       ))}
     </Route>
-  );
+  ));
 
 const FinancialDashboardNavigation = () => {
   const [modules, setModules] = useState(MODULES);
